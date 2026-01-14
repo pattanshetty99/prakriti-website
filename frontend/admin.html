@@ -1,22 +1,51 @@
-<h2>Doctor Dashboard</h2>
-<button onclick="load()">Load Data</button>
-<table border="1" id="table"></table>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Doctor Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Doctor Dashboard – Patient Records</h2>
+
+<button onclick="loadRecords()">Load Patient Data</button>
+
+<table border="1" id="table" cellpadding="8"></table>
 
 <script>
-function load() {
-  fetch("YOUR_BACKEND_URL/records")
+const BACKEND_URL = "https://prakriti-api.onrender.com";
+
+function loadRecords() {
+  fetch(`${BACKEND_URL}/records`)
     .then(res => res.json())
     .then(data => {
-      let html = "<tr><th>ID</th><th>Name</th><th>Age</th><th>Prakriti</th></tr>";
-      data.forEach(r => {
-        html += `<tr>
-          <td>${r[0]}</td>
-          <td>${r[1]}</td>
-          <td>${r[2]}</td>
-          <td>${r[5]}</td>
-        </tr>`;
+      let html = `
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Prakriti</th>
+          <th>Confidence</th>
+        </tr>
+      `;
+
+      data.forEach(row => {
+        html += `
+          <tr>
+            <td>${row[0]}</td>
+            <td>${row[1]}</td>
+            <td>${row[2]}</td>
+            <td>${row[5]}</td>
+            <td>${row[6]}</td>
+          </tr>
+        `;
       });
+
       document.getElementById("table").innerHTML = html;
-    });
+    })
+    .catch(err => alert("Failed to load data"));
 }
 </script>
+
+</body>
+</html>
