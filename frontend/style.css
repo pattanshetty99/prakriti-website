@@ -1,0 +1,13 @@
+body {
+  font-family: Arial;
+  margin: 40px;
+}
+
+.question {
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px;
+  font-size: 16px;
+}
