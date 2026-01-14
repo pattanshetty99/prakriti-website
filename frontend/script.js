@@ -18,7 +18,7 @@ function submitForm() {
   formData.append("image", image);
   formData.append("answers", JSON.stringify(answers));
 
-  fetch("YOUR_BACKEND_URL/predict", {
+  fetch("https://prakriti-website.onrender.com/predict", {
     method: "POST",
     body: formData
   })
