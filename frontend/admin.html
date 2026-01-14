@@ -1,0 +1,22 @@
+<h2>Doctor Dashboard</h2>
+<button onclick="load()">Load Data</button>
+<table border="1" id="table"></table>
+
+<script>
+function load() {
+  fetch("YOUR_BACKEND_URL/records")
+    .then(res => res.json())
+    .then(data => {
+      let html = "<tr><th>ID</th><th>Name</th><th>Age</th><th>Prakriti</th></tr>";
+      data.forEach(r => {
+        html += `<tr>
+          <td>${r[0]}</td>
+          <td>${r[1]}</td>
+          <td>${r[2]}</td>
+          <td>${r[5]}</td>
+        </tr>`;
+      });
+      document.getElementById("table").innerHTML = html;
+    });
+}
+</script>
