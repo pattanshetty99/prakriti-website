@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Prakriti Identification</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Prakriti Identification System</h2>
+
+<h3>Upload Face Image</h3>
+<input type="file" id="image" accept="image/*">
+
+<hr>
+
+<h3>Answer Questions</h3>
+
+<div class="question">
+  <p>Body Build</p>
+  <input type="checkbox" value="Thin"> Thin<br>
+  <input type="checkbox" value="Medium"> Medium<br>
+  <input type="checkbox" value="Heavy"> Heavy
+</div>
+
+<div class="question">
+  <p>Appetite</p>
+  <input type="radio" name="q2" value="Low"> Low<br>
+  <input type="radio" name="q2" value="Moderate"> Moderate<br>
+  <input type="radio" name="q2" value="High"> High
+</div>
+
+<button onclick="submitForm()">Submit</button>
+
+<h3 id="result"></h3>
+
+<script src="script.js"></script>
+
+</body>
+</html>
