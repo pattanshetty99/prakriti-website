@@ -6,6 +6,7 @@ const canvas = document.getElementById("canvas");
 const photoPreview = document.getElementById("photoPreview");
 const captureBtn = document.getElementById("captureBtn");
 const questionsDiv = document.getElementById("questions");
+const downloadLink = document.getElementById("downloadLink");
 
 let stream = null;
 let capturedBlob = null;
@@ -20,8 +21,11 @@ function startCamera() {
     .then(s => {
       stream = s;
       video.srcObject = s;
-      video.play();                      // ✅ ensure playback
-      captureBtn.hidden = false;         // ✅ show capture button
+      video.style.display = "block";
+      video.play();
+
+      captureBtn.hidden = false;     // Show capture button
+      photoPreview.src = "";         // Clear old photo
     })
     .catch(err => {
       console.error(err);
@@ -32,19 +36,24 @@ function startCamera() {
 /* Capture Photo */
 function capture() {
   const ctx = canvas.getContext("2d");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   canvas.toBlob(blob => {
     capturedBlob = blob;
-    photoPreview.src = URL.createObjectURL(blob);  // ✅ show preview
+    photoPreview.src = URL.createObjectURL(blob);
+    photoPreview.style.display = "block";
   });
 
-  // Stop camera safely
+  // Stop camera
   if (stream) {
     stream.getTracks().forEach(track => track.stop());
   }
 
   video.srcObject = null;
+  video.style.display = "none";
   captureBtn.hidden = true;
 
   alert("Photo captured successfully");
@@ -78,10 +87,10 @@ const sections = [
 let qid = 1;
 sections.forEach(section => {
   let block = `<div class="section"><h3>${section.title}</h3>`;
-  
+
   section.qs.forEach(q => {
     block += `<div class="question"><b>${q[0]}</b><br>`;
-    
+
     q[1].forEach(opt => {
       block += `
         <label>
@@ -89,11 +98,11 @@ sections.forEach(section => {
           ${opt}
         </label><br>`;
     });
-    
+
     block += "</div>";
     qid++;
   });
-  
+
   block += "</div>";
   questionsDiv.innerHTML += block;
 });
@@ -108,7 +117,10 @@ function submitForm() {
     return;
   }
 
-  if (!document.getElementById("name").value || !document.getElementById("age").value) {
+  const name = document.getElementById("name").value.trim();
+  const age = document.getElementById("age").value.trim();
+
+  if (!name || !age) {
     alert("Please enter name and age");
     return;
   }
@@ -129,29 +141,36 @@ function submitForm() {
   const formData = new FormData();
   formData.append("image", capturedBlob, "photo.png");
   formData.append("answers", JSON.stringify(answers));
-  formData.append("name", document.getElementById("name").value);
-  formData.append("age", document.getElementById("age").value);
+  formData.append("name", name);
+  formData.append("age", age);
+
+  document.getElementById("result").innerHTML = "⏳ Processing...";
+  downloadLink.style.display = "none";
 
   fetch("https://prakriti-website.onrender.com/predict", {
     method: "POST",
     body: formData
   })
-  .then(res => res.json())
+  .then(res => {
+    if (!res.ok) throw new Error("Server error");
+    return res.json();
+  })
   .then(data => {
 
     document.getElementById("result").innerHTML =
-      `Prakriti: <b>${data.prakriti}</b><br>
+      `✅ Prakriti: <b>${data.prakriti}</b><br>
        Confidence: ${data.confidence}`;
 
-    // Optional PDF download (if backend supports)
+    // Enable PDF download
     if (data.pdf_id) {
-      const link = document.getElementById("downloadLink");
-      link.href = "#";
-      link.innerHTML = "PDF saved in Appwrite Storage";
+      downloadLink.href = `https://prakriti-website.onrender.com/download/${data.pdf_id}`;
+      downloadLink.innerHTML = "⬇ Download PDF Report";
+      downloadLink.style.display = "inline-block";
     }
   })
   .catch(err => {
     console.error(err);
-    alert("Submission failed");
+    alert("Submission failed. Please try again.");
+    document.getElementById("result").innerHTML = "";
   });
 }
