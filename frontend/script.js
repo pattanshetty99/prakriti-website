@@ -11,10 +11,13 @@ function startCamera() {
     .then(s => {
       stream = s;
       video.srcObject = s;
-      document.getElementById("captureBtn").style.display = "inline";
+
+      // SHOW capture button
+      document.getElementById("captureBtn").hidden = false;
     })
     .catch(err => alert("Camera access denied"));
 }
+
 
 /* Capture Photo */
 function capture() {
@@ -23,19 +26,19 @@ function capture() {
 
   canvas.toBlob(blob => {
     capturedBlob = blob;
-
-    // Show preview
-    const imgURL = URL.createObjectURL(blob);
-    photoPreview.src = imgURL;
+    photoPreview.src = URL.createObjectURL(blob);
   });
 
   // Stop camera
   stream.getTracks().forEach(track => track.stop());
   video.srcObject = null;
-  document.getElementById("captureBtn").style.display = "none";
+
+  // Hide capture button again
+  document.getElementById("captureBtn").hidden = true;
 
   alert("Photo captured successfully");
 }
+
 
 
 
