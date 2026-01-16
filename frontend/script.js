@@ -10,6 +10,7 @@ const downloadLink = document.getElementById("downloadLink");
 
 let stream = null;
 let capturedBlob = null;
+let answers = {};   // store selected answers
 
 // -------------------------
 // CAMERA FUNCTIONS
@@ -24,8 +25,9 @@ function startCamera() {
       video.style.display = "block";
       video.play();
 
-      captureBtn.hidden = false;     // Show capture button
-      photoPreview.src = "";         // Clear old photo
+      captureBtn.hidden = false;
+      photoPreview.src = "";
+      photoPreview.style.display = "none";
     })
     .catch(err => {
       console.error(err);
@@ -47,7 +49,6 @@ function capture() {
     photoPreview.style.display = "block";
   });
 
-  // Stop camera
   if (stream) {
     stream.getTracks().forEach(track => track.stop());
   }
@@ -82,30 +83,50 @@ const sections = [
 ];
 
 // -------------------------
-// RENDER QUESTIONS
+// RENDER QUESTIONS (OPTION BOX UI)
 // -------------------------
 let qid = 1;
+
 sections.forEach(section => {
   let block = `<div class="section"><h3>${section.title}</h3>`;
 
   section.qs.forEach(q => {
-    block += `<div class="question"><b>${q[0]}</b><br>`;
+    block += `<div class="question"><b>${q[0]}</b>`;
+    block += `<div class="option-grid">`;
 
     q[1].forEach(opt => {
       block += `
-        <label>
-          <input type="checkbox" data-q="${qid}" value="${opt}">
+        <div class="option-box"
+             onclick="toggleOption(this, '${qid}', '${opt}')">
           ${opt}
-        </label><br>`;
+        </div>
+      `;
     });
 
-    block += "</div>";
+    block += `</div></div>`;
     qid++;
   });
 
-  block += "</div>";
+  block += `</div>`;
   questionsDiv.innerHTML += block;
 });
+
+// -------------------------
+// OPTION TOGGLE HANDLER
+// -------------------------
+function toggleOption(box, qid, value) {
+  box.classList.toggle("selected");
+
+  if (!answers[qid]) {
+    answers[qid] = [];
+  }
+
+  if (answers[qid].includes(value)) {
+    answers[qid] = answers[qid].filter(v => v !== value);
+  } else {
+    answers[qid].push(value);
+  }
+}
 
 // -------------------------
 // SUBMIT FORM
@@ -125,16 +146,8 @@ function submitForm() {
     return;
   }
 
-  let answers = {};
-  document.querySelectorAll("input[type=checkbox]:checked")
-    .forEach(cb => {
-      const q = cb.dataset.q;
-      if (!answers[q]) answers[q] = [];
-      answers[q].push(cb.value);
-    });
-
   if (Object.keys(answers).length === 0) {
-    alert("Please answer at least one question");
+    alert("Please select at least one option");
     return;
   }
 
@@ -158,12 +171,12 @@ function submitForm() {
   .then(data => {
 
     document.getElementById("result").innerHTML =
-      `✅ Prakriti: <b>${data.prakriti}</b><br>
-       Confidence: ${data.confidence}`;
+      `✅ <b>Prakriti:</b> ${data.prakriti}<br>
+       <b>Confidence:</b> ${data.confidence}`;
 
-    // Enable PDF download
     if (data.pdf_id) {
-      downloadLink.href = `https://prakriti-website.onrender.com/download/${data.pdf_id}`;
+      downloadLink.href = 
+        `https://prakriti-website.onrender.com/download/${data.pdf_id}`;
       downloadLink.innerHTML = "⬇ Download PDF Report";
       downloadLink.style.display = "inline-block";
     }
