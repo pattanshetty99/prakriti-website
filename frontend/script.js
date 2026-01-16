@@ -7,12 +7,10 @@ const photoPreview = document.getElementById("photoPreview");
 const captureBtn = document.getElementById("captureBtn");
 const questionsDiv = document.getElementById("questions");
 const downloadLink = document.getElementById("downloadLink");
-const resultCard = document.getElementById("resultCard");
-const resultDiv = document.getElementById("result");
 
 let stream = null;
 let capturedBlob = null;
-let useFrontCamera = true;
+let answers = {};   // store selected answers
 
 // -------------------------
 // CAMERA FUNCTIONS
@@ -20,15 +18,7 @@ let useFrontCamera = true;
 
 /* Start Camera */
 function startCamera() {
-  stopCamera();
-
-  const constraints = {
-    video: {
-      facingMode: useFrontCamera ? "user" : "environment"
-    }
-  };
-
-  navigator.mediaDevices.getUserMedia(constraints)
+  navigator.mediaDevices.getUserMedia({ video: true })
     .then(s => {
       stream = s;
       video.srcObject = s;
@@ -37,25 +27,12 @@ function startCamera() {
 
       captureBtn.hidden = false;
       photoPreview.src = "";
+      photoPreview.style.display = "none";
     })
     .catch(err => {
       console.error(err);
-      alert("Unable to access camera.");
+      alert("Camera access denied or unavailable");
     });
-}
-
-/* Switch Camera */
-function switchCamera() {
-  useFrontCamera = !useFrontCamera;
-  startCamera();
-}
-
-/* Stop Camera */
-function stopCamera() {
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-    stream = null;
-  }
 }
 
 /* Capture Photo */
@@ -72,12 +49,15 @@ function capture() {
     photoPreview.style.display = "block";
   });
 
-  stopCamera();
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+  }
+
   video.srcObject = null;
   video.style.display = "none";
   captureBtn.hidden = true;
 
-  alert("✅ Photo captured successfully");
+  alert("Photo captured successfully");
 }
 
 // -------------------------
@@ -103,7 +83,7 @@ const sections = [
 ];
 
 // -------------------------
-// RENDER QUESTIONS
+// RENDER QUESTIONS (OPTION BOX UI)
 // -------------------------
 let qid = 1;
 
@@ -111,33 +91,42 @@ sections.forEach(section => {
   let block = `<div class="section"><h3>${section.title}</h3>`;
 
   section.qs.forEach(q => {
-    block += `<div class="question"><b>${q[0]}</b><div class="options-grid">`;
+    block += `<div class="question"><b>${q[0]}</b>`;
+    block += `<div class="option-grid">`;
 
     q[1].forEach(opt => {
       block += `
-        <label class="option-box">
-          <input type="checkbox" data-q="${qid}" value="${opt}">
-          <span>${opt}</span>
-        </label>
+        <div class="option-box"
+             onclick="toggleOption(this, '${qid}', '${opt}')">
+          ${opt}
+        </div>
       `;
     });
 
-    block += "</div></div>";
+    block += `</div></div>`;
     qid++;
   });
 
-  block += "</div>";
+  block += `</div>`;
   questionsDiv.innerHTML += block;
 });
 
 // -------------------------
-// OPTION CLICK UX
+// OPTION TOGGLE HANDLER
 // -------------------------
-document.addEventListener("change", e => {
-  if (e.target.matches(".option-box input")) {
-    e.target.closest(".option-box").classList.toggle("selected", e.target.checked);
+function toggleOption(box, qid, value) {
+  box.classList.toggle("selected");
+
+  if (!answers[qid]) {
+    answers[qid] = [];
   }
-});
+
+  if (answers[qid].includes(value)) {
+    answers[qid] = answers[qid].filter(v => v !== value);
+  } else {
+    answers[qid].push(value);
+  }
+}
 
 // -------------------------
 // SUBMIT FORM
@@ -157,16 +146,8 @@ function submitForm() {
     return;
   }
 
-  let answers = {};
-  document.querySelectorAll("input[type=checkbox]:checked")
-    .forEach(cb => {
-      const q = cb.dataset.q;
-      if (!answers[q]) answers[q] = [];
-      answers[q].push(cb.value);
-    });
-
   if (Object.keys(answers).length === 0) {
-    alert("Please answer at least one question");
+    alert("Please select at least one option");
     return;
   }
 
@@ -176,8 +157,7 @@ function submitForm() {
   formData.append("name", name);
   formData.append("age", age);
 
-  resultDiv.innerHTML = "⏳ Processing...";
-  resultCard.style.display = "block";
+  document.getElementById("result").innerHTML = "⏳ Processing...";
   downloadLink.style.display = "none";
 
   fetch("https://prakriti-website.onrender.com/predict", {
@@ -190,23 +170,20 @@ function submitForm() {
   })
   .then(data => {
 
-    resultDiv.innerHTML =
+    document.getElementById("result").innerHTML =
       `✅ <b>Prakriti:</b> ${data.prakriti}<br>
-       🎯 <b>Confidence:</b> ${data.confidence}`;
+       <b>Confidence:</b> ${data.confidence}`;
 
     if (data.pdf_id) {
-      downloadLink.href =
+      downloadLink.href = 
         `https://prakriti-website.onrender.com/download/${data.pdf_id}`;
       downloadLink.innerHTML = "⬇ Download PDF Report";
       downloadLink.style.display = "inline-block";
     }
-
-    resultCard.scrollIntoView({ behavior: "smooth" });
   })
   .catch(err => {
     console.error(err);
     alert("Submission failed. Please try again.");
-    resultDiv.innerHTML = "";
-    resultCard.style.display = "none";
+    document.getElementById("result").innerHTML = "";
   });
 }
