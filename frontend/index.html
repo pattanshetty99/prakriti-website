@@ -24,7 +24,10 @@
   <div class="card">
     <h2>📸 Face Capture</h2>
 
-    <button class="primary-btn" onclick="startCamera()">Start Camera</button>
+    <div class="camera-controls">
+      <button class="primary-btn" onclick="startCamera()">Start Camera</button>
+      <button class="secondary-btn" onclick="switchCamera()">Switch Camera</button>
+    </div>
 
     <div class="camera-area">
       <video id="video" autoplay></video>
@@ -48,8 +51,15 @@
     <button class="submit-btn" onclick="submitForm()">Submit Assessment</button>
   </div>
 
-  <div id="result"></div>
-  <a id="downloadLink" target="_blank"></a>
+  <!-- RESULT CARD -->
+  <div class="card result-card" id="resultCard" style="display:none;">
+    <h2>📊 Assessment Result</h2>
+    <div id="result"></div>
+
+    <div class="download-area">
+      <a id="downloadLink" class="download-btn" target="_blank"></a>
+    </div>
+  </div>
 
 </div>
 
