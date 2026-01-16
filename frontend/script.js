@@ -1,35 +1,42 @@
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
-const questionsDiv = document.getElementById("questions");
+const photoPreview = document.getElementById("photoPreview");
+
+let stream = null;
 let capturedBlob = null;
 
-/* Webcam */
-let stream = null;
-
+/* Start Camera */
 function startCamera() {
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(s => {
       stream = s;
       video.srcObject = s;
-      video.hidden = false;
-      document.getElementById("captureBtn").hidden = false;
-    });
+      document.getElementById("captureBtn").style.display = "inline";
+    })
+    .catch(err => alert("Camera access denied"));
 }
 
-
-/* Capture */
+/* Capture Photo */
 function capture() {
   const ctx = canvas.getContext("2d");
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  canvas.toBlob(blob => capturedBlob = blob);
 
-  // Stop camera after capture
+  canvas.toBlob(blob => {
+    capturedBlob = blob;
+
+    // Show preview
+    const imgURL = URL.createObjectURL(blob);
+    photoPreview.src = imgURL;
+  });
+
+  // Stop camera
   stream.getTracks().forEach(track => track.stop());
-  video.hidden = true;
-  document.getElementById("captureBtn").hidden = true;
+  video.srcObject = null;
+  document.getElementById("captureBtn").style.display = "none";
 
   alert("Photo captured successfully");
 }
+
 
 
 /* Questionnaire Data */
