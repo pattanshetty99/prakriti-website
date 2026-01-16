@@ -163,6 +163,13 @@ def generate_pdf(path, name, age, answers, result, image_path):
         spaceAfter=16
     )
 
+    info_style = ParagraphStyle(
+        "info",
+        fontSize=12,
+        textColor=colors.HexColor("#134e4a"),
+        spaceAfter=6
+    )
+
     section_style = ParagraphStyle(
         "section",
         fontSize=15,
@@ -201,38 +208,30 @@ def generate_pdf(path, name, age, answers, result, image_path):
     elements.append(Paragraph("Prakriti Assessment Report", title_style))
     elements.append(Spacer(1, 12))
 
-    # -------- IMAGE + PATIENT INFO CARD --------
+    # -------- IMAGE + PATIENT TEXT --------
     try:
         face_img = Image(image_path, width=2.7*inch, height=2.2*inch)
     except:
         face_img = Paragraph("Image not available", normal_style)
 
-    patient_table = Table(
-        [
-            ["Name", name],
-            ["Age", str(age)]
-        ],
-        colWidths=[90, 220]
-    )
-
-    patient_table.setStyle(TableStyle([
-        ("BACKGROUND", (0,0), (-1,-1), colors.HexColor("#ecfeff")),
-        ("GRID", (0,0), (-1,-1), 0.8, colors.HexColor("#0f766e")),
-        ("FONT", (0,0), (-1,-1), "Helvetica-Bold"),
-        ("LEFTPADDING", (0,0), (-1,-1), 12),
-        ("TOPPADDING", (0,0), (-1,-1), 10),
-        ("BOTTOMPADDING", (0,0), (-1,-1), 10),
-    ]))
+    info_block = [
+        Paragraph(f"<b>Name:</b> {name}", info_style),
+        Paragraph(f"<b>Age:</b> {age}", info_style),
+    ]
 
     header_table = Table(
-        [[face_img, patient_table]],
+        [[face_img, info_block]],
         colWidths=[3.2*inch, 3.6*inch]
     )
 
     header_table.setStyle(TableStyle([
         ("BOX", (0,0), (-1,-1), 1.5, colors.HexColor("#14b8a6")),
-        ("BACKGROUND", (0,0), (-1,-1), colors.whitesmoke),
+        ("BACKGROUND", (0,0), (-1,-1), colors.HexColor("#ecfeff")),
         ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
+        ("LEFTPADDING", (0,0), (-1,-1), 12),
+        ("RIGHTPADDING", (0,0), (-1,-1), 12),
+        ("TOPPADDING", (0,0), (-1,-1), 12),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 12),
     ]))
 
     elements.append(header_table)
@@ -270,17 +269,16 @@ def generate_pdf(path, name, age, answers, result, image_path):
     except:
         elements.append(Paragraph("Unable to parse answers.", normal_style))
 
-    elements.append(Spacer(1, 22))
+    elements.append(Spacer(1, 24))
 
-    # -------- PRAKRITI RESULT CARD (BOTTOM) --------
-    result_table = Table(
-        [
-            [Paragraph(f"<b>Prakriti:</b> {result['prakriti']}", highlight_style)],
-            [Paragraph(f"<b>Confidence:</b> {result['confidence']}", highlight_style)]
-        ],
-        colWidths=[6.8*inch]
+    # -------- PRAKRITI RESULT LINE (BOTTOM) --------
+    result_line = Paragraph(
+        f"<b>Prakriti:</b> {result['prakriti']}   |   "
+        f"<b>Confidence:</b> {result['confidence']}",
+        highlight_style
     )
 
+    result_table = Table([[result_line]], colWidths=[6.8*inch])
     result_table.setStyle(TableStyle([
         ("BACKGROUND", (0,0), (-1,-1), colors.HexColor("#0f766e")),
         ("ALIGN", (0,0), (-1,-1), "CENTER"),
