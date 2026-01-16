@@ -1,29 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Prakriti Assessment</title>
+  <title>Prakriti Assessment System</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Prakriti Assessment System</h2>
+<h2>Prakriti Assessment Questionnaire</h2>
 
-<input type="text" id="name" placeholder="Enter Name"><br>
-<input type="number" id="age" placeholder="Enter Age"><br><br>
-
-<!-- Webcam -->
-<h3>Capture Face Image</h3>
-<video id="video" width="300" autoplay></video><br>
-<button onclick="capture()">Capture Photo</button>
-<canvas id="canvas" width="300" height="220" style="display:none;"></canvas>
+<input type="text" id="name" placeholder="Enter Name" required>
+<input type="number" id="age" placeholder="Enter Age" required>
 
 <hr>
 
-<h3>Answer Questionnaire</h3>
+<h3>Capture Face Image</h3>
+<video id="video" width="320" autoplay></video><br>
+<button onclick="capture()">Capture Photo</button>
+<canvas id="canvas" width="320" height="240" hidden></canvas>
+
+<hr>
 
 <div id="questions"></div>
 
-<button onclick="submitForm()">Submit</button>
+<button onclick="submitForm()">Submit Assessment</button>
 
 <h3 id="result"></h3>
 
