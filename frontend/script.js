@@ -10,15 +10,31 @@ const downloadLink = document.getElementById("downloadLink");
 
 let stream = null;
 let capturedBlob = null;
-let answers = {};   // store selected answers
+let useFrontCamera = true;   // ✅ toggle state
 
 // -------------------------
 // CAMERA FUNCTIONS
 // -------------------------
 
+function stopCamera() {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+  }
+}
+
 /* Start Camera */
 function startCamera() {
-  navigator.mediaDevices.getUserMedia({ video: true })
+
+  stopCamera();
+
+  const constraints = {
+    video: {
+      facingMode: useFrontCamera ? "user" : "environment"
+    }
+  };
+
+  navigator.mediaDevices.getUserMedia(constraints)
     .then(s => {
       stream = s;
       video.srcObject = s;
@@ -27,16 +43,27 @@ function startCamera() {
 
       captureBtn.hidden = false;
       photoPreview.src = "";
-      photoPreview.style.display = "none";
     })
     .catch(err => {
       console.error(err);
-      alert("Camera access denied or unavailable");
+      alert("Camera not available on this device.");
     });
+}
+
+/* Switch Camera */
+function switchCamera() {
+  useFrontCamera = !useFrontCamera;
+  startCamera();
 }
 
 /* Capture Photo */
 function capture() {
+
+  if (!stream) {
+    alert("Start camera first");
+    return;
+  }
+
   const ctx = canvas.getContext("2d");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
@@ -49,15 +76,11 @@ function capture() {
     photoPreview.style.display = "block";
   });
 
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-  }
-
-  video.srcObject = null;
+  stopCamera();
   video.style.display = "none";
   captureBtn.hidden = true;
 
-  alert("Photo captured successfully");
+  alert("✅ Photo captured successfully");
 }
 
 // -------------------------
@@ -83,23 +106,21 @@ const sections = [
 ];
 
 // -------------------------
-// RENDER QUESTIONS (OPTION BOX UI)
+// RENDER QUESTIONS
 // -------------------------
 let qid = 1;
-
 sections.forEach(section => {
   let block = `<div class="section"><h3>${section.title}</h3>`;
 
   section.qs.forEach(q => {
-    block += `<div class="question"><b>${q[0]}</b>`;
-    block += `<div class="option-grid">`;
+    block += `<div class="question"><b>${q[0]}</b><div class="options">`;
 
     q[1].forEach(opt => {
       block += `
-        <div class="option-box"
-             onclick="toggleOption(this, '${qid}', '${opt}')">
-          ${opt}
-        </div>
+        <label class="option-box">
+          <input type="checkbox" data-q="${qid}" value="${opt}">
+          <span>${opt}</span>
+        </label>
       `;
     });
 
@@ -107,26 +128,9 @@ sections.forEach(section => {
     qid++;
   });
 
-  block += `</div>`;
+  block += "</div>";
   questionsDiv.innerHTML += block;
 });
-
-// -------------------------
-// OPTION TOGGLE HANDLER
-// -------------------------
-function toggleOption(box, qid, value) {
-  box.classList.toggle("selected");
-
-  if (!answers[qid]) {
-    answers[qid] = [];
-  }
-
-  if (answers[qid].includes(value)) {
-    answers[qid] = answers[qid].filter(v => v !== value);
-  } else {
-    answers[qid].push(value);
-  }
-}
 
 // -------------------------
 // SUBMIT FORM
@@ -146,8 +150,16 @@ function submitForm() {
     return;
   }
 
+  let answers = {};
+  document.querySelectorAll("input[type=checkbox]:checked")
+    .forEach(cb => {
+      const q = cb.dataset.q;
+      if (!answers[q]) answers[q] = [];
+      answers[q].push(cb.value);
+    });
+
   if (Object.keys(answers).length === 0) {
-    alert("Please select at least one option");
+    alert("Please answer at least one question");
     return;
   }
 
@@ -171,12 +183,11 @@ function submitForm() {
   .then(data => {
 
     document.getElementById("result").innerHTML =
-      `✅ <b>Prakriti:</b> ${data.prakriti}<br>
-       <b>Confidence:</b> ${data.confidence}`;
+      `✅ Prakriti: <b>${data.prakriti}</b><br>
+       Confidence: ${data.confidence}`;
 
     if (data.pdf_id) {
-      downloadLink.href = 
-        `https://prakriti-website.onrender.com/download/${data.pdf_id}`;
+      downloadLink.href = `https://prakriti-website.onrender.com/download/${data.pdf_id}`;
       downloadLink.innerHTML = "⬇ Download PDF Report";
       downloadLink.style.display = "inline-block";
     }
