@@ -22,6 +22,7 @@ def init_db():
 def save_record(data):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
+
     c.execute("""
     INSERT INTO submissions 
     (name, age, answers, image_path, prakriti, confidence)
@@ -34,8 +35,14 @@ def save_record(data):
         data["prakriti"],
         data["confidence"]
     ))
+
+    record_id = c.lastrowid   # 👈 important
+
     conn.commit()
     conn.close()
+
+    return record_id
+
 
 def get_all_records():
     conn = sqlite3.connect(DB_NAME)
