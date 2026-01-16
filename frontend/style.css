@@ -154,3 +154,52 @@ video, img {
   margin-top: 10px;
   font-weight: bold;
 }
+
+/* Center alignment utility */
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Result Box */
+.result-box {
+  background: linear-gradient(135deg, #ecfeff, #cffafe);
+  border: 2px solid #14b8a6;
+  border-radius: 12px;
+  padding: 20px;
+  font-size: 18px;
+  text-align: center;
+  margin: 15px auto;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+}
+
+/* Download Box */
+.download-box {
+  margin-top: 20px;
+}
+
+/* Download Button */
+.download-btn {
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  color: white;
+  padding: 14px 26px;
+  border-radius: 30px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Camera Controls Center */
+.camera-controls.center {
+  margin-bottom: 12px;
+}
+
