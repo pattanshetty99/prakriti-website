@@ -4,56 +4,51 @@
   <title>Prakriti Assessment System</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <div class="container">
 
-  <h2>🧘 Prakriti Assessment Questionnaire</h2>
+  <h1>🧘 Prakriti Assessment</h1>
+  <p class="subtitle">Ayurvedic Constitution Analysis</p>
 
-  <!-- USER DETAILS -->
-  <div class="section">
-    <h3>👤 Personal Information</h3>
-    <input type="text" id="name" placeholder="Enter Name" required>
-    <input type="number" id="age" placeholder="Enter Age" required>
+  <!-- PERSONAL DETAILS -->
+  <div class="card">
+    <h2>👤 Personal Information</h2>
+    <div class="form-row">
+      <input type="text" id="name" placeholder="Full Name" required>
+      <input type="number" id="age" placeholder="Age" required>
+    </div>
   </div>
 
-  <!-- CAMERA SECTION -->
-  <div class="camera-box">
-    <h3>📸 Capture Face Image</h3>
+  <!-- CAMERA -->
+  <div class="card">
+    <h2>📸 Face Capture</h2>
 
-    <button onclick="startCamera()">Start Camera</button>
+    <button class="primary-btn" onclick="startCamera()">Start Camera</button>
 
-    <br><br>
+    <div class="camera-area">
+      <video id="video" autoplay></video>
+      <img id="photoPreview">
+      <canvas id="canvas" width="320" height="240" hidden></canvas>
+    </div>
 
-    <video id="video" width="320" height="240" autoplay></video>
-
-    <br>
-
-    <button id="captureBtn" onclick="capture()" hidden>Capture Photo</button>
-
-    <br><br>
-
-    <img id="photoPreview" width="320" />
-
-    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+    <button id="captureBtn" class="secondary-btn" onclick="capture()" hidden>
+      Capture Photo
+    </button>
   </div>
 
   <!-- QUESTIONS -->
-  <div>
-    <h3>📝 Questionnaire</h3>
+  <div class="card">
+    <h2>📝 Questionnaire</h2>
     <div id="questions"></div>
   </div>
 
   <!-- SUBMIT -->
-  <div style="text-align:center; margin-top:20px;">
-    <button onclick="submitForm()">✅ Submit Assessment</button>
+  <div class="submit-area">
+    <button class="submit-btn" onclick="submitForm()">Submit Assessment</button>
   </div>
 
-  <!-- RESULT -->
-  <h3 id="result"></h3>
-
-  <!-- DOWNLOAD -->
+  <div id="result"></div>
   <a id="downloadLink" target="_blank"></a>
 
 </div>
