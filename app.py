@@ -80,7 +80,7 @@ def predict():
         )
         pdf_id = pdf_upload["$id"]
 
-        # Save record in DB
+        # Save record
         database.create_document(
             database_id=DATABASE_ID,
             collection_id=COLLECTION_ID,
@@ -132,42 +132,37 @@ def download_pdf(pdf_id):
         return jsonify({"error": str(e)}), 500
 
 # -----------------------------
-# PDF Generator (PROFESSIONAL DESIGN)
+# PDF Generator (TABLE DESIGN)
 # -----------------------------
 def generate_pdf(path, name, age, answers, result, image_path):
 
     styles = getSampleStyleSheet()
 
-    # ----------- STYLES -----------
     title_style = ParagraphStyle(
         "title",
-        fontSize=26,
+        fontSize=24,
         alignment=1,
         textColor=colors.white,
-        spaceAfter=10
+        spaceAfter=12
     )
 
     patient_style = ParagraphStyle(
         "patient",
         fontSize=12,
-        textColor=colors.HexColor("#0f172a"),
         leading=16
     )
 
-    section_style = ParagraphStyle(
-        "section",
-        fontSize=14,
+    table_header_style = ParagraphStyle(
+        "tableHeader",
+        fontSize=12,
         textColor=colors.white,
-        backColor=colors.HexColor("#2563eb"),
-        leftIndent=8,
-        spaceBefore=16,
-        spaceAfter=8
+        alignment=1
     )
 
-    question_style = ParagraphStyle(
-        "question",
+    table_cell_style = ParagraphStyle(
+        "tableCell",
         fontSize=11,
-        leading=14
+        leading=16
     )
 
     result_style = ParagraphStyle(
@@ -182,25 +177,23 @@ def generate_pdf(path, name, age, answers, result, image_path):
         pagesize=A4,
         rightMargin=36,
         leftMargin=36,
-        topMargin=30,
-        bottomMargin=30
+        topMargin=36,
+        bottomMargin=36
     )
 
     elements = []
 
-    # ---------------- HEADER BANNER ----------------
+    # ---------------- HEADER ----------------
     header = Table(
         [[Paragraph("PRAKRITI ASSESSMENT REPORT", title_style)]],
         colWidths=[7.3*inch]
     )
-
     header.setStyle(TableStyle([
         ("BACKGROUND", (0,0), (-1,-1), colors.HexColor("#1e3a8a")),
         ("ALIGN", (0,0), (-1,-1), "CENTER"),
-        ("TOPPADDING", (0,0), (-1,-1), 18),
-        ("BOTTOMPADDING", (0,0), (-1,-1), 18),
+        ("TOPPADDING", (0,0), (-1,-1), 16),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 16),
     ]))
-
     elements.append(header)
     elements.append(Spacer(1, 18))
 
@@ -211,7 +204,7 @@ def generate_pdf(path, name, age, answers, result, image_path):
         face_img = Paragraph("Image not available", patient_style)
 
     patient_info = [
-        Paragraph(f"<b>Patient Name:</b> {name}", patient_style),
+        Paragraph(f"<b>Name:</b> {name}", patient_style),
         Paragraph(f"<b>Age:</b> {age}", patient_style),
     ]
 
@@ -229,42 +222,57 @@ def generate_pdf(path, name, age, answers, result, image_path):
         ("BOTTOMPADDING", (0,0), (-1,-1), 12),
         ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
     ]))
-
     elements.append(info_table)
     elements.append(Spacer(1, 20))
 
-    # ---------------- RESPONSES SECTION ----------------
-    elements.append(Paragraph("Selected Responses", section_style))
-    elements.append(Spacer(1, 10))
-
+    # ---------------- ANSWERS TABLE ----------------
     parsed_answers = json.loads(answers)
+
+    table_data = [
+        [
+            Paragraph("Question", table_header_style),
+            Paragraph("Selected Answer(s)", table_header_style)
+        ]
+    ]
 
     for qid, selected_opts in parsed_answers.items():
         question_text = QUESTION_MAP.get(qid, f"Question {qid}")
+        selected_text = ", ".join(selected_opts)
 
-        block = []
-        block.append(Paragraph(f"<b>Q{qid}. {question_text}</b>", question_style))
-        block.append(Spacer(1, 4))
+        table_data.append([
+            Paragraph(question_text, table_cell_style),
+            Paragraph(selected_text, table_cell_style)
+        ])
 
-        for opt in selected_opts:
-            block.append(Paragraph(f"✔ {opt}", question_style))
+    answers_table = Table(
+        table_data,
+        colWidths=[3.5*inch, 3.8*inch],
+        repeatRows=1
+    )
 
-        card = Table([[block]], colWidths=[7.1*inch])
-        card.setStyle(TableStyle([
-            ("BACKGROUND", (0,0), (-1,-1), colors.HexColor("#eef2ff")),
-            ("BOX", (0,0), (-1,-1), 0.8, colors.HexColor("#6366f1")),
-            ("LEFTPADDING", (0,0), (-1,-1), 12),
-            ("RIGHTPADDING", (0,0), (-1,-1), 12),
-            ("TOPPADDING", (0,0), (-1,-1), 10),
-            ("BOTTOMPADDING", (0,0), (-1,-1), 10),
-        ]))
+    answers_table.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#2563eb")),
+        ("TEXTCOLOR", (0,0), (-1,0), colors.white),
+        ("ALIGN", (0,0), (-1,0), "CENTER"),
 
-        elements.append(card)
-        elements.append(Spacer(1, 12))
+        ("GRID", (0,0), (-1,-1), 0.6, colors.grey),
 
-    elements.append(Spacer(1, 24))
+        ("LEFTPADDING", (0,0), (-1,-1), 12),
+        ("RIGHTPADDING", (0,0), (-1,-1), 12),
+        ("TOPPADDING", (0,0), (-1,-1), 12),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 12),
 
-    # ---------------- FINAL RESULT BANNER ----------------
+        ("BACKGROUND", (0,1), (-1,-1), colors.HexColor("#eef2ff")),
+        ("ROWBACKGROUNDS", (0,1), (-1,-1), [
+            colors.HexColor("#eef2ff"),
+            colors.HexColor("#e0f2fe")
+        ]),
+    ]))
+
+    elements.append(answers_table)
+    elements.append(Spacer(1, 30))
+
+    # ---------------- RESULT BANNER ----------------
     result_text = Paragraph(
         f"<b>Prakriti:</b> {result['prakriti']} &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; "
         f"<b>Confidence:</b> {result['confidence']}",
