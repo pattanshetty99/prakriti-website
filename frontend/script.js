@@ -1,9 +1,18 @@
+// -------------------------
+// DOM ELEMENTS
+// -------------------------
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const photoPreview = document.getElementById("photoPreview");
+const captureBtn = document.getElementById("captureBtn");
+const questionsDiv = document.getElementById("questions");
 
 let stream = null;
 let capturedBlob = null;
+
+// -------------------------
+// CAMERA FUNCTIONS
+// -------------------------
 
 /* Start Camera */
 function startCamera() {
@@ -11,13 +20,14 @@ function startCamera() {
     .then(s => {
       stream = s;
       video.srcObject = s;
-
-      // SHOW capture button
-      document.getElementById("captureBtn").hidden = false;
+      video.play();                      // ✅ ensure playback
+      captureBtn.hidden = false;         // ✅ show capture button
     })
-    .catch(err => alert("Camera access denied"));
+    .catch(err => {
+      console.error(err);
+      alert("Camera access denied or unavailable");
+    });
 }
-
 
 /* Capture Photo */
 function capture() {
@@ -26,63 +36,80 @@ function capture() {
 
   canvas.toBlob(blob => {
     capturedBlob = blob;
-    photoPreview.src = URL.createObjectURL(blob);
+    photoPreview.src = URL.createObjectURL(blob);  // ✅ show preview
   });
 
-  // Stop camera
-  stream.getTracks().forEach(track => track.stop());
-  video.srcObject = null;
+  // Stop camera safely
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+  }
 
-  // Hide capture button again
-  document.getElementById("captureBtn").hidden = true;
+  video.srcObject = null;
+  captureBtn.hidden = true;
 
   alert("Photo captured successfully");
 }
 
-
-
-
-/* Questionnaire Data */
+// -------------------------
+// QUESTIONNAIRE DATA
+// -------------------------
 const sections = [
-{
-title:"Section A: Body Build & Weight",
-qs:[
-["Q1. How would you describe your body frame?",["Thin / Lean","Medium","Heavy / Broad"]],
-["Q2. How does your body weight change over time?",["Difficult to gain weight","Remains stable","Gains weight easily"]]
-]
-},
-{
-title:"Section B: Appetite & Digestion",
-qs:[
-["Q3. How is your appetite usually?",["Irregular or low","Strong and intense","Mild but steady"]],
-["Q4. How is your digestion after meals?",["Irregular or bloating","Fast digestion","Slow digestion"]],
-["Q5. How do you generally feel after eating?",["Bloated","Energetic","Sleepy"]],
-["Q6. Bowel movements?",["Dry or irregular","Loose or frequent","Heavy"]]
-]
-}
+  {
+    title: "Section A: Body Build & Weight",
+    qs: [
+      ["Q1. How would you describe your body frame?", ["Thin / Lean", "Medium", "Heavy / Broad"]],
+      ["Q2. How does your body weight change over time?", ["Difficult to gain weight", "Remains stable", "Gains weight easily"]]
+    ]
+  },
+  {
+    title: "Section B: Appetite & Digestion",
+    qs: [
+      ["Q3. How is your appetite usually?", ["Irregular or low", "Strong and intense", "Mild but steady"]],
+      ["Q4. How is your digestion after meals?", ["Irregular or bloating", "Fast digestion", "Slow digestion"]],
+      ["Q5. How do you generally feel after eating?", ["Bloated", "Energetic", "Sleepy"]],
+      ["Q6. Bowel movements?", ["Dry or irregular", "Loose or frequent", "Heavy"]]
+    ]
+  }
 ];
 
-/* Render Questions */
+// -------------------------
+// RENDER QUESTIONS
+// -------------------------
 let qid = 1;
 sections.forEach(section => {
   let block = `<div class="section"><h3>${section.title}</h3>`;
+  
   section.qs.forEach(q => {
     block += `<div class="question"><b>${q[0]}</b><br>`;
+    
     q[1].forEach(opt => {
-      block += `<input type="checkbox" data-q="${qid}" value="${opt}"> ${opt}<br>`;
+      block += `
+        <label>
+          <input type="checkbox" data-q="${qid}" value="${opt}">
+          ${opt}
+        </label><br>`;
     });
+    
     block += "</div>";
     qid++;
   });
+  
   block += "</div>";
   questionsDiv.innerHTML += block;
 });
 
-/* Submit */
+// -------------------------
+// SUBMIT FORM
+// -------------------------
 function submitForm() {
 
   if (!capturedBlob) {
     alert("Please capture photo first");
+    return;
+  }
+
+  if (!document.getElementById("name").value || !document.getElementById("age").value) {
+    alert("Please enter name and age");
     return;
   }
 
@@ -93,6 +120,11 @@ function submitForm() {
       if (!answers[q]) answers[q] = [];
       answers[q].push(cb.value);
     });
+
+  if (Object.keys(answers).length === 0) {
+    alert("Please answer at least one question");
+    return;
+  }
 
   const formData = new FormData();
   formData.append("image", capturedBlob, "photo.png");
@@ -106,13 +138,20 @@ function submitForm() {
   })
   .then(res => res.json())
   .then(data => {
-  document.getElementById("result").innerHTML =
-    `Prakriti: <b>${data.prakriti}</b><br>
-     Confidence: ${data.confidence}`;
 
-  const link = document.getElementById("downloadLink");
-  link.href = `https://YOUR-RENDER-URL.onrender.com/download/${data.record_id}`;
-  link.innerHTML = "⬇ Download PDF Report";
-});
+    document.getElementById("result").innerHTML =
+      `Prakriti: <b>${data.prakriti}</b><br>
+       Confidence: ${data.confidence}`;
 
+    // Optional PDF download (if backend supports)
+    if (data.pdf_id) {
+      const link = document.getElementById("downloadLink");
+      link.href = "#";
+      link.innerHTML = "PDF saved in Appwrite Storage";
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Submission failed");
+  });
 }
