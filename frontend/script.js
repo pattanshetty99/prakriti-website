@@ -7,18 +7,36 @@ const photoPreview = document.getElementById("photoPreview");
 const captureBtn = document.getElementById("captureBtn");
 const questionsDiv = document.getElementById("questions");
 const downloadLink = document.getElementById("downloadLink");
+const resultCard = document.getElementById("resultCard");
+const resultDiv = document.getElementById("result");
 
 let stream = null;
 let capturedBlob = null;
-let answers = {};   // store selected answers
+let answers = {};
+let useFrontCamera = true;
 
 // -------------------------
 // CAMERA FUNCTIONS
 // -------------------------
 
+function stopCamera() {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+  }
+}
+
 /* Start Camera */
 function startCamera() {
-  navigator.mediaDevices.getUserMedia({ video: true })
+  stopCamera();
+
+  const constraints = {
+    video: {
+      facingMode: useFrontCamera ? "user" : "environment"
+    }
+  };
+
+  navigator.mediaDevices.getUserMedia(constraints)
     .then(s => {
       stream = s;
       video.srcObject = s;
@@ -35,13 +53,23 @@ function startCamera() {
     });
 }
 
+/* Switch Camera */
+function switchCamera() {
+  useFrontCamera = !useFrontCamera;
+  startCamera();
+}
+
 /* Capture Photo */
 function capture() {
+  if (!stream) {
+    alert("Start camera first");
+    return;
+  }
+
   const ctx = canvas.getContext("2d");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
-
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(video, 0, 0);
 
   canvas.toBlob(blob => {
     capturedBlob = blob;
@@ -49,15 +77,12 @@ function capture() {
     photoPreview.style.display = "block";
   });
 
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-  }
-
+  stopCamera();
   video.srcObject = null;
   video.style.display = "none";
   captureBtn.hidden = true;
 
-  alert("Photo captured successfully");
+  alert("✅ Photo captured successfully");
 }
 
 // -------------------------
@@ -83,7 +108,7 @@ const sections = [
 ];
 
 // -------------------------
-// RENDER QUESTIONS (OPTION BOX UI)
+// RENDER QUESTIONS
 // -------------------------
 let qid = 1;
 
@@ -157,7 +182,8 @@ function submitForm() {
   formData.append("name", name);
   formData.append("age", age);
 
-  document.getElementById("result").innerHTML = "⏳ Processing...";
+  resultDiv.innerHTML = "⏳ Processing...";
+  resultCard.style.display = "block";
   downloadLink.style.display = "none";
 
   fetch("https://prakriti-website.onrender.com/predict", {
@@ -170,20 +196,23 @@ function submitForm() {
   })
   .then(data => {
 
-    document.getElementById("result").innerHTML =
+    resultDiv.innerHTML =
       `✅ <b>Prakriti:</b> ${data.prakriti}<br>
-       <b>Confidence:</b> ${data.confidence}`;
+       🎯 <b>Confidence:</b> ${data.confidence}`;
 
     if (data.pdf_id) {
-      downloadLink.href = 
+      downloadLink.href =
         `https://prakriti-website.onrender.com/download/${data.pdf_id}`;
       downloadLink.innerHTML = "⬇ Download PDF Report";
       downloadLink.style.display = "inline-block";
     }
+
+    resultCard.scrollIntoView({ behavior: "smooth" });
   })
   .catch(err => {
     console.error(err);
     alert("Submission failed. Please try again.");
-    document.getElementById("result").innerHTML = "";
+    resultDiv.innerHTML = "";
+    resultCard.style.display = "none";
   });
 }
