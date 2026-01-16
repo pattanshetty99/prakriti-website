@@ -1,20 +1,37 @@
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-import os, uuid
+import os, uuid, json
 from appwrite.input_file import InputFile
 
 from model import predict_prakriti
 from appwrite_client import database, storage, DATABASE_ID, COLLECTION_ID, BUCKET_ID
 
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Image,
+    Table, TableStyle
+)
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.lib import colors
 
 app = Flask(__name__)
 CORS(app)
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# -----------------------------
+# QUESTION MAP (Expand later)
+# -----------------------------
+QUESTION_MAP = {
+    "1": "How would you describe your body frame?",
+    "2": "How does your body weight change over time?",
+    "3": "How is your appetite usually?",
+    "4": "How is your digestion after meals?",
+    "5": "How do you generally feel after eating?",
+    "6": "Bowel movements?"
+}
 
 # -----------------------------
 # Home
@@ -35,7 +52,7 @@ def predict():
         name = request.form.get("name")
         age = int(request.form.get("age"))
 
-        # Save locally
+        # Save image locally
         filename = f"{uuid.uuid4()}.png"
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         image.save(filepath)
@@ -51,7 +68,7 @@ def predict():
         # Predict
         result = predict_prakriti(filepath, answers)
 
-        # Create PDF
+        # Generate PDF
         pdf_filename = f"{uuid.uuid4()}.pdf"
         pdf_path = os.path.join(UPLOAD_FOLDER, pdf_filename)
         generate_pdf(pdf_path, name, age, answers, result, filepath)
@@ -64,7 +81,7 @@ def predict():
         )
         pdf_id = pdf_upload["$id"]
 
-        # Save record to Appwrite DB
+        # Save record in DB
         doc = database.create_document(
             database_id=DATABASE_ID,
             collection_id=COLLECTION_ID,
@@ -117,7 +134,7 @@ def download_pdf(pdf_id):
         return jsonify({"error": str(e)}), 500
 
 # -----------------------------
-# Fetch Records (Doctor Dashboard)
+# Doctor Records
 # -----------------------------
 @app.route("/records")
 def records():
@@ -132,30 +149,101 @@ def records():
         return jsonify({"error": str(e)}), 500
 
 # -----------------------------
-# PDF Generator
+# PDF Generator (Styled Layout)
 # -----------------------------
 def generate_pdf(path, name, age, answers, result, image_path):
+
     styles = getSampleStyleSheet()
-    doc = SimpleDocTemplate(path, pagesize=A4)
+
+    title_style = ParagraphStyle(
+        "title",
+        fontSize=20,
+        textColor=colors.HexColor("#0f766e"),
+        spaceAfter=12
+    )
+
+    section_style = ParagraphStyle(
+        "section",
+        fontSize=14,
+        textColor=colors.HexColor("#115e59"),
+        spaceBefore=12,
+        spaceAfter=6
+    )
+
+    normal_style = styles["Normal"]
+
+    doc = SimpleDocTemplate(
+        path,
+        pagesize=A4,
+        rightMargin=40,
+        leftMargin=40,
+        topMargin=40,
+        bottomMargin=40
+    )
+
     elements = []
 
-    elements.append(Paragraph("Prakriti Assessment Report", styles["Title"]))
-    elements.append(Spacer(1,12))
+    # -------- TITLE --------
+    elements.append(Paragraph("Prakriti Assessment Report", title_style))
+    elements.append(Spacer(1, 12))
 
-    elements.append(Paragraph(f"Name: {name}", styles["Normal"]))
-    elements.append(Paragraph(f"Age: {age}", styles["Normal"]))
-    elements.append(Paragraph(f"Prakriti: {result['prakriti']}", styles["Normal"]))
-    elements.append(Paragraph(f"Confidence: {result['confidence']}", styles["Normal"]))
-    elements.append(Spacer(1,12))
+    # -------- IMAGE + PATIENT INFO --------
+    try:
+        face_img = Image(image_path, width=2.5*inch, height=2*inch)
+    except:
+        face_img = Paragraph("Image not available", normal_style)
 
-    elements.append(Paragraph("Answers:", styles["Heading2"]))
-    elements.append(Paragraph(answers, styles["Normal"]))
-    elements.append(Spacer(1,12))
+    patient_table = Table(
+        [
+            ["Name", name],
+            ["Age", str(age)],
+            ["Prakriti", result["prakriti"]],
+            ["Confidence", str(result["confidence"])]
+        ],
+        colWidths=[90, 200]
+    )
+
+    patient_table.setStyle(TableStyle([
+        ("BACKGROUND", (0,0), (-1,0), colors.whitesmoke),
+        ("GRID", (0,0), (-1,-1), 0.6, colors.grey),
+        ("LEFTPADDING", (0,0), (-1,-1), 8),
+        ("RIGHTPADDING", (0,0), (-1,-1), 8),
+        ("TOPPADDING", (0,0), (-1,-1), 6),
+        ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+    ]))
+
+    header_table = Table(
+        [[face_img, patient_table]],
+        colWidths=[3*inch, 3.5*inch]
+    )
+
+    header_table.setStyle(TableStyle([
+        ("VALIGN", (0,0), (-1,-1), "MIDDLE"),
+        ("BOX", (0,0), (-1,-1), 1, colors.black)
+    ]))
+
+    elements.append(header_table)
+    elements.append(Spacer(1, 18))
+
+    # -------- ANSWERS --------
+    elements.append(Paragraph("Selected Responses", section_style))
+    elements.append(Spacer(1, 6))
 
     try:
-        elements.append(Image(image_path, width=200, height=150))
+        parsed_answers = json.loads(answers)
+
+        for qid, selected_opts in parsed_answers.items():
+            question_text = QUESTION_MAP.get(qid, f"Question {qid}")
+            elements.append(Paragraph(f"<b>Q{qid}. {question_text}</b>", normal_style))
+            elements.append(Spacer(1, 4))
+
+            for opt in selected_opts:
+                elements.append(Paragraph(f"✔ {opt}", normal_style))
+
+            elements.append(Spacer(1, 10))
+
     except:
-        pass
+        elements.append(Paragraph("Unable to parse answers.", normal_style))
 
     doc.build(elements)
 
