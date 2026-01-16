@@ -15,12 +15,22 @@
 
 <h3>Capture Face Image</h3>
 
-<button onclick="startCamera()">Take Photo</button><br><br>
+<button onclick="startCamera()">📷 Take Photo</button>
 
-<video id="video" width="320" hidden></video><br>
-<button onclick="capture()" hidden id="captureBtn">Capture</button>
+<br><br>
 
-<canvas id="canvas" width="320" height="240" hidden></canvas>
+<video id="video" width="320" height="240" autoplay></video>
+
+<br>
+
+<button id="captureBtn" onclick="capture()" style="display:none;">Capture</button>
+
+<br><br>
+
+<img id="photoPreview" width="320" />
+
+<canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+
 
 
 <hr>
