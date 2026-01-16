@@ -40,12 +40,13 @@ function startCamera() {
     .then(s => {
       stream = s;
       video.srcObject = s;
-      video.style.display = "block";
       video.play();
 
+      // ✅ SHOW VIDEO INSIDE CAMERA BOX
+      video.classList.add("active");
+      photoPreview.classList.remove("active");
+
       captureBtn.hidden = false;
-      photoPreview.src = "";
-      photoPreview.style.display = "none";
     })
     .catch(err => {
       console.error(err);
@@ -74,12 +75,13 @@ function capture() {
   canvas.toBlob(blob => {
     capturedBlob = blob;
     photoPreview.src = URL.createObjectURL(blob);
-    photoPreview.style.display = "block";
+
+    // ✅ SHOW PHOTO INSIDE CAMERA BOX
+    photoPreview.classList.add("active");
+    video.classList.remove("active");
   });
 
   stopCamera();
-  video.srcObject = null;
-  video.style.display = "none";
   captureBtn.hidden = true;
 
   alert("✅ Photo captured successfully");
