@@ -203,3 +203,35 @@ video, img {
   margin-bottom: 12px;
 }
 
+/* CAMERA BOX */
+.camera-box {
+  width: 320px;
+  height: 240px;
+  margin: 0 auto 15px auto;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+  border: 3px solid #14b8a6;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+/* Video and image inside camera box */
+.camera-box video,
+.camera-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+/* Show video when active */
+.camera-box video.active {
+  display: block;
+}
+
+/* Show image when captured */
+.camera-box img.active {
+  display: block;
+}
+
