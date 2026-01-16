@@ -14,9 +14,14 @@
 <hr>
 
 <h3>Capture Face Image</h3>
-<video id="video" width="320" autoplay></video><br>
-<button onclick="capture()">Capture Photo</button>
+
+<button onclick="startCamera()">Take Photo</button><br><br>
+
+<video id="video" width="320" hidden></video><br>
+<button onclick="capture()" hidden id="captureBtn">Capture</button>
+
 <canvas id="canvas" width="320" height="240" hidden></canvas>
+
 
 <hr>
 
@@ -25,6 +30,9 @@
 <button onclick="submitForm()">Submit Assessment</button>
 
 <h3 id="result"></h3>
+<br>
+<a id="downloadLink" target="_blank"></a>
+
 
 <script src="script.js"></script>
 </body>
