@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os, uuid
+from appwrite.input_file import InputFile
 
 from model import predict_prakriti
 from appwrite_client import database, storage, DATABASE_ID, COLLECTION_ID, BUCKET_ID
@@ -39,7 +40,7 @@ def predict():
     image_upload = storage.create_file(
         bucket_id=BUCKET_ID,
         file_id="unique()",
-        file=open(filepath, "rb")
+        file=InputFile.from_path(filepath)
     )
 
     image_id = image_upload["$id"]
@@ -54,8 +55,9 @@ def predict():
     pdf_upload = storage.create_file(
         bucket_id=BUCKET_ID,
         file_id="unique()",
-        file=open(pdf_path, "rb")
+        file=InputFile.from_path(pdf_path)
     )
+
 
     pdf_id = pdf_upload["$id"]
 
