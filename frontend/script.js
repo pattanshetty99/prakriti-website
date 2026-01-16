@@ -4,16 +4,33 @@ const questionsDiv = document.getElementById("questions");
 let capturedBlob = null;
 
 /* Webcam */
-navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => video.srcObject = stream);
+let stream = null;
+
+function startCamera() {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(s => {
+      stream = s;
+      video.srcObject = s;
+      video.hidden = false;
+      document.getElementById("captureBtn").hidden = false;
+    });
+}
+
 
 /* Capture */
 function capture() {
   const ctx = canvas.getContext("2d");
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   canvas.toBlob(blob => capturedBlob = blob);
+
+  // Stop camera after capture
+  stream.getTracks().forEach(track => track.stop());
+  video.hidden = true;
+  document.getElementById("captureBtn").hidden = true;
+
   alert("Photo captured successfully");
 }
+
 
 /* Questionnaire Data */
 const sections = [
@@ -164,8 +181,13 @@ function submitForm() {
   })
   .then(res => res.json())
   .then(data => {
-    document.getElementById("result").innerHTML =
-      `Prakriti: <b>${data.prakriti}</b><br>
-       Confidence: ${data.confidence}`;
-  });
+  document.getElementById("result").innerHTML =
+    `Prakriti: <b>${data.prakriti}</b><br>
+     Confidence: ${data.confidence}`;
+
+  const link = document.getElementById("downloadLink");
+  link.href = `https://YOUR-RENDER-URL.onrender.com/download/${data.record_id}`;
+  link.innerHTML = "⬇ Download PDF Report";
+});
+
 }
