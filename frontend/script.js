@@ -7,25 +7,19 @@ const photoPreview = document.getElementById("photoPreview");
 const captureBtn = document.getElementById("captureBtn");
 const questionsDiv = document.getElementById("questions");
 const downloadLink = document.getElementById("downloadLink");
+const resultCard = document.getElementById("resultCard");
+const resultDiv = document.getElementById("result");
 
 let stream = null;
 let capturedBlob = null;
-let useFrontCamera = true;   // ✅ toggle state
+let useFrontCamera = true;
 
 // -------------------------
 // CAMERA FUNCTIONS
 // -------------------------
 
-function stopCamera() {
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-    stream = null;
-  }
-}
-
 /* Start Camera */
 function startCamera() {
-
   stopCamera();
 
   const constraints = {
@@ -46,7 +40,7 @@ function startCamera() {
     })
     .catch(err => {
       console.error(err);
-      alert("Camera not available on this device.");
+      alert("Unable to access camera.");
     });
 }
 
@@ -56,14 +50,16 @@ function switchCamera() {
   startCamera();
 }
 
+/* Stop Camera */
+function stopCamera() {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+  }
+}
+
 /* Capture Photo */
 function capture() {
-
-  if (!stream) {
-    alert("Start camera first");
-    return;
-  }
-
   const ctx = canvas.getContext("2d");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
@@ -77,6 +73,7 @@ function capture() {
   });
 
   stopCamera();
+  video.srcObject = null;
   video.style.display = "none";
   captureBtn.hidden = true;
 
@@ -109,11 +106,12 @@ const sections = [
 // RENDER QUESTIONS
 // -------------------------
 let qid = 1;
+
 sections.forEach(section => {
   let block = `<div class="section"><h3>${section.title}</h3>`;
 
   section.qs.forEach(q => {
-    block += `<div class="question"><b>${q[0]}</b><div class="options">`;
+    block += `<div class="question"><b>${q[0]}</b><div class="options-grid">`;
 
     q[1].forEach(opt => {
       block += `
@@ -124,12 +122,21 @@ sections.forEach(section => {
       `;
     });
 
-    block += `</div></div>`;
+    block += "</div></div>";
     qid++;
   });
 
   block += "</div>";
   questionsDiv.innerHTML += block;
+});
+
+// -------------------------
+// OPTION CLICK UX
+// -------------------------
+document.addEventListener("change", e => {
+  if (e.target.matches(".option-box input")) {
+    e.target.closest(".option-box").classList.toggle("selected", e.target.checked);
+  }
 });
 
 // -------------------------
@@ -169,7 +176,8 @@ function submitForm() {
   formData.append("name", name);
   formData.append("age", age);
 
-  document.getElementById("result").innerHTML = "⏳ Processing...";
+  resultDiv.innerHTML = "⏳ Processing...";
+  resultCard.style.display = "block";
   downloadLink.style.display = "none";
 
   fetch("https://prakriti-website.onrender.com/predict", {
@@ -182,19 +190,23 @@ function submitForm() {
   })
   .then(data => {
 
-    document.getElementById("result").innerHTML =
-      `✅ Prakriti: <b>${data.prakriti}</b><br>
-       Confidence: ${data.confidence}`;
+    resultDiv.innerHTML =
+      `✅ <b>Prakriti:</b> ${data.prakriti}<br>
+       🎯 <b>Confidence:</b> ${data.confidence}`;
 
     if (data.pdf_id) {
-      downloadLink.href = `https://prakriti-website.onrender.com/download/${data.pdf_id}`;
+      downloadLink.href =
+        `https://prakriti-website.onrender.com/download/${data.pdf_id}`;
       downloadLink.innerHTML = "⬇ Download PDF Report";
       downloadLink.style.display = "inline-block";
     }
+
+    resultCard.scrollIntoView({ behavior: "smooth" });
   })
   .catch(err => {
     console.error(err);
     alert("Submission failed. Please try again.");
-    document.getElementById("result").innerHTML = "";
+    resultDiv.innerHTML = "";
+    resultCard.style.display = "none";
   });
 }
