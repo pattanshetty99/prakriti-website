@@ -4,45 +4,59 @@
   <title>Prakriti Assessment System</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<h2>Prakriti Assessment Questionnaire</h2>
+<div class="container">
 
-<input type="text" id="name" placeholder="Enter Name" required>
-<input type="number" id="age" placeholder="Enter Age" required>
+  <h2>🧘 Prakriti Assessment Questionnaire</h2>
 
-<hr>
+  <!-- USER DETAILS -->
+  <div class="section">
+    <h3>👤 Personal Information</h3>
+    <input type="text" id="name" placeholder="Enter Name" required>
+    <input type="number" id="age" placeholder="Enter Age" required>
+  </div>
 
-<h3>Capture Face Image</h3>
+  <!-- CAMERA SECTION -->
+  <div class="camera-box">
+    <h3>📸 Capture Face Image</h3>
 
-<button onclick="startCamera()">📷 Take Photo</button>
+    <button onclick="startCamera()">Start Camera</button>
 
-<br><br>
+    <br><br>
 
-<video id="video" width="320" height="240" autoplay></video>
+    <video id="video" width="320" height="240" autoplay></video>
 
-<br>
+    <br>
 
-<button id="captureBtn" onclick="capture()" hidden>📸 Capture</button>
+    <button id="captureBtn" onclick="capture()" hidden>Capture Photo</button>
 
-<br><br>
+    <br><br>
 
-<img id="photoPreview" width="320" />
+    <img id="photoPreview" width="320" />
 
-<canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+  </div>
 
+  <!-- QUESTIONS -->
+  <div>
+    <h3>📝 Questionnaire</h3>
+    <div id="questions"></div>
+  </div>
 
+  <!-- SUBMIT -->
+  <div style="text-align:center; margin-top:20px;">
+    <button onclick="submitForm()">✅ Submit Assessment</button>
+  </div>
 
-<hr>
+  <!-- RESULT -->
+  <h3 id="result"></h3>
 
-<div id="questions"></div>
+  <!-- DOWNLOAD -->
+  <a id="downloadLink" target="_blank"></a>
 
-<button onclick="submitForm()">Submit Assessment</button>
-
-<h3 id="result"></h3>
-<br>
-<a id="downloadLink" target="_blank"></a>
-
+</div>
 
 <script src="script.js"></script>
 </body>
