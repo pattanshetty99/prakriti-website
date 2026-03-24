@@ -62,9 +62,8 @@ def submit():
         )
 
         answer_cols = {
-            QUESTION_COLUMN_MAP[k]: ", ".join(v)
-            for k, v in answers.items()
-            if k in QUESTION_COLUMN_MAP
+            QUESTION_COLUMN_MAP[k]: ", ".join(answers.get(k, []))
+            for k in QUESTION_COLUMN_MAP
         }
 
         doc = database.create_document(
