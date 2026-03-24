@@ -84,19 +84,68 @@ const sections = [
     qs: [
       ["Q1. How would you describe your overall body build and muscle development?", ["Thin, lean, low muscle mass", "Moderately built, proportionate muscles", "Broad, heavy, well-developed muscles"]],
       ["Q2. How would you describe your body frame or chest width?", ["Narrow / slim frame", "Medium frame", "Broad / wide frame"]],
-      ["Q3. How would you describe your body proportions or height relative to others?", ["Appears too short or too tall compared to average", "Medium / proportionate", "Long or well-proportioned"]],
-      ["Q4. What best describes your natural skin complexion or color?", ["Black / dark", "Dark brown", "Dusky / wheatish", "Light brown / fair"]],
-      ["Q5. What best describes the condition of your nails?", ["Dry, rough, brittle, easily breaking", "Sharp, flexible, pink, lustrous", "Thick, oily, smooth, polished"]],
-      ["Q6. How sensitive is your skin to environment, cosmetics, or weather?", ["Very sensitive, easily irritated", "Normal sensitivity", "Less sensitive / thick skin"]]
+      ["Q3. What best describes your natural skin complexion or color?", ["Black / dark", "Dark brown", "Dusky / wheatish", "Light brown / fair"]],
+      ["Q4. What best describes the condition of your nails?", ["Dry, rough, brittle, easily breaking", "Sharp, flexible, pink, lustrous", "Thick, oily, smooth, polished"]],
+      ["Q5. How sensitive is your skin to environment, cosmetics, or weather?", ["Very sensitive, easily irritated", "Normal sensitivity", "Less sensitive / thick skin"]]
     ]
   },
   {
     title: "Digestion, Appetite & Metabolism",
     qs: [
-      ["Q7. How would you describe your appetite?", ["Irregular or low appetite", "Moderate and steady appetite", "Strong appetite, frequent hunger"]],
-      ["Q8. How would you describe your digestion after meals?", ["Weak digestion, bloating or gas", "Moderate digestion", "Strong digestion, fast metabolism"]],
-      ["Q9. How would you describe your metabolism and weight change?", ["Slow metabolism, difficult to gain weight", "Moderate metabolism", "Fast metabolism, weight changes easily"]],
-      ["Q10. How are your bowel movements usually?", ["Constipation, dry stools", "Loose stools, frequent", "Regular and well-formed"]]
+      ["Q6. How would you describe your appetite?", ["Irregular or low appetite", "Moderate and steady appetite", "Strong appetite, frequent hunger"]],
+      ["Q7. How would you describe your digestion after meals?", ["Weak digestion, bloating or gas", "Moderate digestion", "Strong digestion, fast metabolism"]],
+      ["Q8. How would you describe your metabolism and weight change?", ["Slow metabolism, difficult to gain weight", "Moderate metabolism", "Fast metabolism, weight changes easily"]],
+      ["Q9. How are your bowel movements usually?", ["Constipation, dry stools", "Loose stools, frequent", "Regular and well-formed"]]
+    ]
+  },
+  {
+    title: "Food Preferences, Climate and Temperature Sensitivity",
+    qs: [
+      ["Q10. Which taste(s) do you naturally prefer? (Select more than one if applicable)", ["Sweet","Sour","Salty","Bitter","Pungent (spicy)","Astringent (dry / rough taste)"]],
+      ["Q11. Which climate do you feel most comfortable in?", ["Cold climate", "Moderate climate", "Warm climate"]],
+      ["Q12. How sensitive are you to cold temperatures?", ["Very sensitive to cold", "Moderate sensitivity", "Comfortable in cold"]],
+      ["Q13. How does your body usually feel in normal weather?", ["Often feels cold", "Feels normal", "Often feels warm or hot"]]
+    ]
+  },
+  {
+    title: "Sleep, Energy & Activity",
+    qs: [
+      ["Q14. How would you describe your sleep pattern?", ["Light, disturbed, short sleep", "Moderate, balanced sleep", "Deep, long, heavy sleep"]],
+      ["Q15. How would you describe your physical activity level?", ["Mostly sedentary", "Moderately active", "Highly active"]],
+      ["Q16. How would you describe your daily energy levels?", ["Variable energy, easily fatigued", "Intense energy, driven and focused", "Slow but steady energy"]]
+    ]
+  },
+  {
+    title: "Mental & Emotional Traits",
+    qs: [
+      ["Q17. How would you describe your emotional nature?", ["Anxious, nervous, restless", "Irritable, aggressive, easily frustrated", "Calm, stable, patient"]],
+      ["Q18. How would you describe your memory and learning ability?", ["Learns quickly but forgets easily", "Sharp, accurate, logical thinking", "Learns slowly but retains for long"]],
+      ["Q19. How do you usually respond to stress or pressure?", ["Worry, anxiety, overthinking", "Anger, impatience, competitiveness", "Calmness, tolerance, withdrawal"]],
+      ["Q20. How long can you maintain focus on a task?", ["Short attention span", "Moderate concentration", "Long sustained focus"]]
+    ]
+  },
+  {
+    title: "Hair Characteristics and Oral Health",
+    qs: [
+      ["Q21. How would you describe the thickness and density of your hair?", ["Thin, sparse, fragile", "Medium thickness", "Thick, dense, heavy"]],
+      ["Q22. How would you describe the oiliness of your scalp and hair?", ["Very dry scalp", "Normal scalp", "Oily scalp"]],
+      ["Q23. How would you describe your teeth strength and health?", ["Weak teeth, sensitive, cavities", "Moderate strength", "Strong, healthy teeth"]],
+      ["Q24. How often do you experience dryness in mouth or lips?", ["Very frequent dryness", "Occasional dryness", "Rare dryness"]]
+    ]
+  },
+  {
+    title: "Sweat, Body Odor and Bone-Joint Characteristics",
+    qs: [
+      ["Q25. How much do you sweat during daily activities or mild exercise?", ["Very little sweating", "Moderate sweating", "Excessive sweating"]],
+      ["Q26. How would you describe your joints and flexibility?", ["•	Cracking joints, stiffness, dryness", "Moderate flexibility", "Heavy joints, stable, less flexible"]]
+    ]
+  },
+  {
+    title: "Hunger & Thirst Tolerance",
+    qs: [
+      ["Q27. How well can you tolerate skipping meals?", ["Poor tolerance, feel weak quickly", "Moderate tolerance", "Cannot tolerate skipping meals, become irritable"]],
+      ["Q28. How frequently do you feel thirsty?", ["Low thirst", "Moderate thirst", "High thirst"]],
+      ["Q29. Is your hunger timing regular every day?", ["Very irregular", "Mostly regular", "Very sharp and time-bound"]]
     ]
   }
 ];
