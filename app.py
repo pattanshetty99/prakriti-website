@@ -50,23 +50,67 @@ def home():
 @app.route("/submit", methods=["POST"])
 def submit():
     try:
-        image = request.files["image"]
-        answers = json.loads(request.form.get("answers"))
-        name = request.form.get("name")
-        age = int(request.form.get("age"))
+        print("🔥 Request received")
 
+        # -------------------------
+        # SAFE INPUT HANDLING
+        # -------------------------
+        if "image" not in request.files:
+            return jsonify({"error": "No image uploaded"}), 400
+
+        image = request.files["image"]
+
+        answers_raw = request.form.get("answers")
+        if not answers_raw:
+            return jsonify({"error": "Answers missing"}), 400
+
+        answers = json.loads(answers_raw)
+
+        name = request.form.get("name") or "Unknown"
+        age_raw = request.form.get("age")
+        age = int(age_raw) if age_raw and age_raw.isdigit() else 0
+
+        print("Name:", name)
+        print("Age:", age)
+
+        # -------------------------
+        # SAVE IMAGE
+        # -------------------------
         img_path = f"{UPLOAD_FOLDER}/{uuid.uuid4()}.png"
         image.save(img_path)
+        print("Image saved")
 
-        img = storage.create_file(
-            BUCKET_ID, "unique()", InputFile.from_path(img_path)
-        )
+        # -------------------------
+        # SAFE IMAGE UPLOAD
+        # -------------------------
+        image_id = "upload_failed"
 
+        try:
+            print("Uploading image...")
+            img = storage.create_file(
+                BUCKET_ID,
+                "unique()",
+                InputFile.from_path(img_path)
+            )
+            image_id = img["$id"]
+            print("Image uploaded:", image_id)
+
+        except Exception as upload_error:
+            print("⚠️ Upload failed:", str(upload_error))
+
+        # -------------------------
+        # PREPARE ANSWERS (ALL 29)
+        # -------------------------
         answer_cols = {
             QUESTION_COLUMN_MAP[k]: ", ".join(answers.get(k, []))
             for k in QUESTION_COLUMN_MAP
         }
 
+        print("Answers prepared")
+
+        # -------------------------
+        # CREATE DOCUMENT
+        # -------------------------
         doc = database.create_document(
             DATABASE_ID,
             COLLECTION_ID,
@@ -75,13 +119,25 @@ def submit():
                 "name": name,
                 "age": age,
                 **answer_cols,
-                "image_id": img["$id"]
+                "image_id": image_id
             }
         )
 
-        return jsonify({"status": "success"})
+        print("Document created")
+
+        # -------------------------
+        # CLEANUP
+        # -------------------------
+        if os.path.exists(img_path):
+            os.remove(img_path)
+
+        return jsonify({
+            "status": "success",
+            "message": "Data stored successfully"
+        })
 
     except Exception as e:
+        print("❌ ERROR:", str(e))
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
