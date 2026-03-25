@@ -9,12 +9,12 @@ const questionsDiv = document.getElementById("questions");
 const resultCard = document.getElementById("resultCard");
 const resultDiv = document.getElementById("result");
 const submitBtn = document.querySelector(".submit-btn");
-
+ 
 let stream = null;
 let capturedBlob = null;
 let answers = {};
 let useFrontCamera = true;
-
+ 
 // -------------------------
 // DISABLE SUBMIT IF ALREADY SUBMITTED (SESSION ONLY)
 // -------------------------
@@ -23,11 +23,59 @@ if (sessionStorage.getItem("prakriti_submitted")) {
   submitBtn.innerText = "Already Submitted";
   submitBtn.style.opacity = "0.6";
   submitBtn.style.cursor = "not-allowed";
-
+ 
   resultCard.style.display = "block";
   resultDiv.innerHTML = "✅ You have already submitted the data. Thank you!";
 }
-
+ 
+// -------------------------
+// FACE DETECTION (must be defined before stopCamera/startCamera)
+// -------------------------
+let faceDetector = null;
+let detectionLoop = null;
+ 
+async function startFaceDetection() {
+  if (!("FaceDetector" in window)) return; // not supported, silently skip
+ 
+  faceDetector = new FaceDetector({ fastMode: true });
+  const overlay = document.querySelector(".face-overlay");
+ 
+  detectionLoop = setInterval(async () => {
+    if (!stream) return;
+    try {
+      const faces = await faceDetector.detect(video);
+      if (faces.length === 0) {
+        overlay.classList.remove("aligned");
+        return;
+      }
+ 
+      const face = faces[0].boundingBox;
+      const vw = video.videoWidth;
+      const vh = video.videoHeight;
+ 
+      // Overlay zone in video coordinates (matches 80% wide, centered)
+      const zoneLeft   = vw * 0.10;
+      const zoneRight  = vw * 0.90;
+      const zoneTop    = vh * 0.05;
+      const zoneBottom = vh * 0.95;
+ 
+      const isAligned =
+        face.left   >= zoneLeft &&
+        face.right  <= zoneRight &&
+        face.top    >= zoneTop &&
+        face.bottom <= zoneBottom;
+ 
+      overlay.classList.toggle("aligned", isAligned);
+    } catch (e) {}
+  }, 300);
+}
+ 
+function stopFaceDetection() {
+  clearInterval(detectionLoop);
+  detectionLoop = null;
+  document.querySelector(".face-overlay").classList.remove("aligned");
+}
+ 
 // -------------------------
 // CAMERA FUNCTIONS
 // -------------------------
@@ -36,8 +84,9 @@ function stopCamera() {
     stream.getTracks().forEach(track => track.stop());
     stream = null;
   }
+  stopFaceDetection();
 }
-
+ 
 function startCamera() {
   stopCamera();
   navigator.mediaDevices.getUserMedia({
@@ -49,33 +98,35 @@ function startCamera() {
     video.classList.add("active");
     photoPreview.classList.remove("active");
     captureBtn.hidden = false;
+    startFaceDetection();
   })
   .catch(() => alert("Camera access failed"));
 }
-
+ 
 function switchCamera() {
   useFrontCamera = !useFrontCamera;
   startCamera();
 }
-
+ 
 function capture() {
   const ctx = canvas.getContext("2d");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
-  ctx.translate(canvas.width, 0);  // ← add
-  ctx.scale(-1, 1);                 // ← add
+  ctx.translate(canvas.width, 0);
+  ctx.scale(-1, 1);
   ctx.drawImage(video, 0, 0);
-
+ 
   canvas.toBlob(blob => {
     capturedBlob = blob;
     photoPreview.src = URL.createObjectURL(blob);
     photoPreview.classList.add("active");
     video.classList.remove("active");
   });
-
+ 
   stopCamera();
   captureBtn.hidden = true;
 }
+
 
 // -------------------------
 // QUESTIONS
