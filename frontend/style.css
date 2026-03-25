@@ -257,11 +257,11 @@ img {
 /* FACE OUTLINE */
 .face-overlay {
   position: absolute;
-  bottom: 0;              /* 👈 stick to bottom */
+  bottom: -5px;              /* shoulders touch bottom */
   left: 50%;
   width: 80%;
-  height: 90%;
-  transform: translateX(-50%);   /* 👈 remove vertical centering */
+  height: 95%;
+  transform: translateX(-50%);
   pointer-events: none;
   z-index: 2;
 }
