@@ -5,9 +5,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <div class="container">
-
   <h1>🧘 Prakriti Data Collection</h1>
   <p class="subtitle">Ayurvedic Constitution Research Study</p>
 
@@ -20,63 +18,40 @@
     </div>
   </div>
 
-<!-- CAMERA -->
-<div class="card">
-  <h2>📸 Face Capture</h2>
+  <!-- CAMERA -->
+  <div class="card">
+    <h2>📸 Face Capture</h2>
+    <div class="camera-box">
+      <div class="camera-container">
 
-  <div class="camera-box">
-    
-    <div class="camera-container">
-      
-      <!-- VIDEO -->
-      <video id="video" autoplay playsinline></video>
+        <!-- VIDEO -->
+        <video id="video" autoplay playsinline></video>
 
-      <!-- FACE SHAPE OVERLAY (SVG) -->
-      <svg class="face-overlay" viewBox="0 0 200 240" preserveAspectRatio="none">
-        <path
-          d="
-            M100,10
-            C70,10 48,28 40,55
-            C32,75 32,98 32,112
-            C29,108 22,110 20,120
-            C17,132 20,150 30,155
-            C33,172 40,192 54,208
-            C66,222 82,230 100,232
-            C118,230 134,222 146,208
-            C160,192 167,172 170,155
-            C180,150 183,132 180,120
-            C178,110 171,108 168,112
-            C168,98 168,75 160,55
-            C152,28 130,10 100,10 Z
-          "
-        />
-      </svg>
+        <!-- FACE SHAPE OVERLAY (SVG) -->
+        <svg class="face-overlay" viewBox="0 0 200 240" preserveAspectRatio="none">
+          <path d="M100,10 C70,10 48,28 40,55 C32,75 32,98 32,112 C29,108 22,110 20,120 C17,132 20,150 30,155 C33,172 40,192 54,208 C66,222 82,230 100,232 C118,230 134,222 146,208 C160,192 167,172 170,155 C180,150 183,132 180,120 C178,110 171,108 168,112 C168,98 168,75 160,55 C152,28 130,10 100,10 Z"/>
+        </svg>
 
+        <!-- CAPTURED IMAGE -->
+        <img id="photoPreview">
+
+      </div>
+      <!-- CANVAS -->
+      <canvas id="canvas" hidden></canvas>
     </div>
 
-    <!-- CAPTURED IMAGE -->
-    <img id="photoPreview">
+    <!-- CONTROLS -->
+    <div class="camera-controls center">
+      <button class="primary-btn" onclick="startCamera()">Start Camera</button>
+      <button class="secondary-btn" onclick="switchCamera()">Switch Camera</button>
+      <button id="captureBtn" class="secondary-btn" onclick="capture()" hidden>Capture</button>
+    </div>
 
-    <!-- CANVAS -->
-    <canvas id="canvas" hidden></canvas>
-
+    <!-- INSTRUCTION -->
+    <p style="text-align:center; color:#0f766e; margin-top:10px;">
+      Align your face inside the outline before capturing
+    </p>
   </div>
-
-  <!-- CONTROLS -->
-  <div class="camera-controls center">
-    <button class="primary-btn" onclick="startCamera()">Start Camera</button>
-    <button class="secondary-btn" onclick="switchCamera()">Switch Camera</button>
-    <button id="captureBtn" class="secondary-btn" onclick="capture()" hidden>
-      Capture
-    </button>
-  </div>
-
-  <!-- INSTRUCTION -->
-  <p style="text-align:center; color:#0f766e; margin-top:10px;">
-    Align your face inside the outline before capturing
-  </p>
-
-</div>
 
   <!-- QUESTIONS -->
   <div class="card">
@@ -94,9 +69,7 @@
     <h2>✅ Submission Status</h2>
     <div class="result-box" id="result"></div>
   </div>
-
 </div>
-
 <script src="script.js"></script>
 </body>
 </html>
