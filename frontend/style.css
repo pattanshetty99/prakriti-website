@@ -273,3 +273,8 @@ img {
   stroke-width: 3;
   stroke-dasharray: 6,6;
 }
+
+.face-overlay.aligned path {
+  stroke: #14b8a6;
+  stroke-dasharray: 6,5;
+}
