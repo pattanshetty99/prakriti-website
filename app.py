@@ -92,9 +92,17 @@ def submit():
                 "unique()",
                 InputFile.from_path(img_path)
             )
-            image_id = img["$id"]
+        
+            print("Upload response:", img)
+        
+            # ✅ FIX HERE
+            if isinstance(img, dict):
+                image_id = img.get("$id", "no_id")
+            else:
+                image_id = getattr(img, "id", "no_id")
+        
             print("Image uploaded:", image_id)
-
+        
         except Exception as upload_error:
             print("⚠️ Upload failed:", str(upload_error))
 
