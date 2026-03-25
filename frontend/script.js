@@ -127,14 +127,14 @@ function capture() {
   ctx.translate(canvas.width, 0);
   ctx.scale(-1, 1);
   ctx.drawImage(video, 0, 0);
- 
+
   canvas.toBlob(blob => {
     capturedBlob = blob;
     photoPreview.src = URL.createObjectURL(blob);
-    photoPreview.classList.add("active");
-    video.classList.remove("active");
+    photoPreview.classList.add("active");    // shows the image
+    video.classList.remove("active");        // hides the video
   });
- 
+
   stopCamera();
   captureBtn.hidden = true;
 }
