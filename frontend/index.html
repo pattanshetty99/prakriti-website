@@ -25,7 +25,13 @@
     <h2>📸 Face Capture</h2>
 
     <div class="camera-box">
-      <video id="video" autoplay></video>
+      <div class="camera-container">
+        <video id="video" autoplay playsinline></video>
+    
+        <!-- FACE OUTLINE -->
+        <div class="face-overlay"></div>
+      </div>
+    
       <img id="photoPreview">
       <canvas id="canvas" hidden></canvas>
     </div>
