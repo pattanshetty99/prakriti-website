@@ -62,6 +62,8 @@ function capture() {
   const ctx = canvas.getContext("2d");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
+  ctx.translate(canvas.width, 0);  // ← add
+  ctx.scale(-1, 1);                 // ← add
   ctx.drawImage(video, 0, 0);
 
   canvas.toBlob(blob => {
