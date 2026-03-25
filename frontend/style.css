@@ -90,12 +90,9 @@ input {
   margin-top: 15px;
 }
 
-/* Only apply to non-camera images */
+/* Global img rule - kept minimal to avoid breaking camera preview */
 img {
-  width: 260px;
-  height: 200px;
   border-radius: 10px;
-  border: 2px dashed #14b8a6;
 }
 
 /* ---------- QUESTIONS ---------- */
@@ -204,7 +201,7 @@ img {
   margin-bottom: 12px;
 }
 
-/* CAMERA BOX */
+/* ---------- CAMERA BOX ---------- */
 .camera-box {
   width: 320px;
   height: 240px;
@@ -217,36 +214,46 @@ img {
   position: relative;
 }
 
-/* Video and image inside camera box */
+/* Video and image inside camera box — hidden by default */
 .camera-box video,
 .camera-box img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: none;
+  border: none;
+  border-radius: 0;
 }
 
-/* Show video when active */
+/* Show video when camera is active */
 .camera-box video.active {
   display: block;
 }
 
-/* Show image when captured */
+/* Show captured image after capture */
 .camera-box img.active {
   display: block;
 }
 
+/* Override global img rule for photo preview inside camera box */
+#photoPreview {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  border: none !important;
+  border-radius: 0 !important;
+}
 
-/* ---------------- FACE ALIGNMENT OVERLAY ---------------- */
+/* ---------- FACE ALIGNMENT OVERLAY ---------- */
 
-/* Container for video + overlay */
+/* Container for video + SVG overlay */
 .camera-container {
   position: relative;
   width: 100%;
   height: 100%;
 }
 
-/* Make video fill container */
+/* Mirrored video so left = left */
 .camera-container video {
   width: 100%;
   height: 100%;
@@ -255,10 +262,10 @@ img {
   z-index: 1;
 }
 
-/* FACE OUTLINE */
+/* Face outline SVG */
 .face-overlay {
   position: absolute;
-  bottom: -5px;              /* shoulders touch bottom */
+  bottom: -5px;
   left: 50%;
   width: 80%;
   height: 95%;
@@ -267,13 +274,16 @@ img {
   z-index: 2;
 }
 
+/* Default: white dashed outline */
 .face-overlay path {
   fill: transparent;
   stroke: white;
   stroke-width: 3;
   stroke-dasharray: 6,6;
+  transition: stroke 0.3s ease;
 }
 
+/* Green outline when face is aligned */
 .face-overlay.aligned path {
   stroke: #14b8a6;
   stroke-dasharray: 6,5;
