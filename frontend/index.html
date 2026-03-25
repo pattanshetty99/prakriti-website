@@ -20,30 +20,54 @@
     </div>
   </div>
 
-  <!-- CAMERA -->
-  <div class="card">
-    <h2>📸 Face Capture</h2>
+<!-- CAMERA -->
+<div class="card">
+  <h2>📸 Face Capture</h2>
 
-    <div class="camera-box">
-      <div class="camera-container">
-        <video id="video" autoplay playsinline></video>
+  <div class="camera-box">
     
-        <!-- FACE OUTLINE -->
-        <div class="face-overlay"></div>
-      </div>
-    
-      <img id="photoPreview">
-      <canvas id="canvas" hidden></canvas>
+    <div class="camera-container">
+      
+      <!-- VIDEO -->
+      <video id="video" autoplay playsinline></video>
+
+      <!-- FACE SHAPE OVERLAY (SVG) -->
+      <svg class="face-overlay" viewBox="0 0 300 400" preserveAspectRatio="none">
+        <path d="
+          M150,20
+          C95,20 50,70 50,140
+          C50,220 80,300 150,360
+          C220,300 250,220 250,140
+          C250,70 205,20 150,20
+          Z
+        " />
+      </svg>
+
     </div>
 
-    <div class="camera-controls center">
-      <button class="primary-btn" onclick="startCamera()">Start Camera</button>
-      <button class="secondary-btn" onclick="switchCamera()">Switch Camera</button>
-      <button id="captureBtn" class="secondary-btn" onclick="capture()" hidden>
-        Capture
-      </button>
-    </div>
+    <!-- CAPTURED IMAGE -->
+    <img id="photoPreview">
+
+    <!-- CANVAS -->
+    <canvas id="canvas" hidden></canvas>
+
   </div>
+
+  <!-- CONTROLS -->
+  <div class="camera-controls center">
+    <button class="primary-btn" onclick="startCamera()">Start Camera</button>
+    <button class="secondary-btn" onclick="switchCamera()">Switch Camera</button>
+    <button id="captureBtn" class="secondary-btn" onclick="capture()" hidden>
+      Capture
+    </button>
+  </div>
+
+  <!-- INSTRUCTION -->
+  <p style="text-align:center; color:#0f766e; margin-top:10px;">
+    Align your face inside the outline before capturing
+  </p>
+
+</div>
 
   <!-- QUESTIONS -->
   <div class="card">
