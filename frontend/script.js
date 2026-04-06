@@ -268,8 +268,12 @@ function submitForm() {
 
   const name = document.getElementById("name").value.trim();
   const age = document.getElementById("age").value.trim();
+  const height = document.getElementById("height").value.trim();
+  const weight = document.getElementById("weight").value.trim();
 
-  if (!name || !age) return alert("Please enter name and age");
+  if (!name || !age || !height || !weight) {
+    return alert("Please enter name, age, height and weight");
+  }
 
   submitBtn.disabled = true;
   submitBtn.innerText = "Submitting...";
@@ -280,6 +284,8 @@ function submitForm() {
   fd.append("answers", JSON.stringify(answers));
   fd.append("name", name);
   fd.append("age", age);
+  fd.append("height", height);
+  fd.append("weight", weight);
 
   fetch("https://prakriti-website.onrender.com/submit", {
     method: "POST",
