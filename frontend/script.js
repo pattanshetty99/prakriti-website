@@ -230,12 +230,29 @@ sections.forEach(section => {
   questionsDiv.innerHTML += html;
 });
 
+const multiSelectQuestions = [10];
+
 function toggleOption(el, qid, val) {
-  el.classList.toggle("selected");
-  answers[qid] = answers[qid] || [];
-  answers[qid].includes(val)
-    ? answers[qid] = answers[qid].filter(v => v !== val)
-    : answers[qid].push(val);
+  const isMulti = multiSelectQuestions.includes(Number(qid));
+
+  if (isMulti) {
+    el.classList.toggle("selected");
+    answers[qid] = answers[qid] || [];
+
+    if (answers[qid].includes(val)) {
+      answers[qid] = answers[qid].filter(v => v !== val);
+    } else {
+      answers[qid].push(val);
+    }
+  } else {
+    const parent = el.parentElement;
+    parent.querySelectorAll(".option-box").forEach(opt => {
+      opt.classList.remove("selected");
+    });
+
+    el.classList.add("selected");
+    answers[qid] = [val];
+  }
 }
 
 // -------------------------
