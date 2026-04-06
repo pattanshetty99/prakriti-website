@@ -69,9 +69,18 @@ def submit():
         name = request.form.get("name") or "Unknown"
         age_raw = request.form.get("age")
         age = int(age_raw) if age_raw and age_raw.isdigit() else 0
+        height_raw = request.form.get("height")
+        weight_raw = request.form.get("weight")
+        
+        height = float(height_raw) if height_raw else 0
+        weight = float(weight_raw) if weight_raw else 0
+        bmi = round(weight / ((height / 100) ** 2), 2) if height > 0 else 0
 
         print("Name:", name)
         print("Age:", age)
+        print("Height:", height)
+        print("Weight:", weight)
+        print("BMI:", bmi)
 
         # -------------------------
         # SAVE IMAGE
@@ -126,6 +135,9 @@ def submit():
             {
                 "name": name,
                 "age": age,
+                "height": height,
+                "weight": weight,
+                "bmi": bmi,   # optional
                 **answer_cols,
                 "image_id": image_id
             }
