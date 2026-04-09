@@ -212,7 +212,106 @@ const sections = [
       ["Q28. How frequently do you feel thirsty?", ["Low thirst", "Moderate thirst", "High thirst"]],
       ["Q29. Is your hunger timing regular every day?", ["Very irregular", "Mostly regular", "Very sharp and time-bound"]]
     ]
-  }
+  },
+  {
+    title: "Food Preferences",
+    qs: [
+      ["Q11. Which taste(s) do you naturally prefer? (Select more than one if applicable)", ["Sweet", "Sour", "Salty", "Bitter", "Pungent(Spicy)","Astringent(dry/rough taste)"]],
+      ["Q12. What best describes your dietary habit?", ["Vegan","Vegetarian", "Omnivorous(vegetarian + nonveg)"]]
+    ]
+  },
+  {
+    title: "Climate & Hydration",
+    qs: [
+      ["Q13. Which climate do you feel most comfortable in?", ["Cold climate", "Moderate climate", "Warm climate"]],
+      ["Q14. How much water do you usually consume daily?", ["Low intake", "Moderate intake", "High intake"]]
+    ]
+  },
+  {
+    title:"Sleep, Energy & Activity",
+    qs: [
+      ["Q15. How would you describe your sleep pattern?", ["Light, disturbed, short sleep", "Moderate, balanced sleep", "Deep, long, heavy sleep"]],
+      ["Q16. How would you describe your physical activity level?", ["Mostly sedentary", "Moderately active", "Highly active"]],
+      ["Q17. How would you describe your daily energy levels?", ["Variable energy, easily fatigued", "Intense energy, driven and focused", "Slow but steady energy"]]
+    ]
+  },
+  {
+    {
+   title: "Mental & Emotional Traits",
+   qs: [
+    ["Q18. How would you describe your emotional nature?", ["Anxious, nervous, restless", "Irritable, aggressive, easily frustrated", "Calm, stable, patient"]],
+    ["Q19. How would you describe your memory and learning ability?", ["Learns quickly but forgets easily", "Sharp, accurate, logical thinking", "Learns slowly but retains for long"]],
+    ["Q20. How do you usually respond to stress or pressure?", ["Worry, anxiety, overthinking", "Anger, impatience, competitiveness", "Calmness, tolerance, withdrawal"]]
+  ]
+},
+{
+  title: "Hair Characteristics",
+  qs: [
+    ["Q21. How would you describe the thickness and density of your hair?", ["Thin, sparse, fragile", "Medium thickness", "Thick, dense, heavy"]],
+    ["Q22. How often do you experience hair fall or hair breakage?", ["Frequent hair fall", "Moderate hair fall", "Minimal hair fall"]],
+    ["Q23. How would you describe the oiliness of your scalp and hair?", ["Very dry scalp", "Normal scalp", "Oily scalp"]]
+  ]
+},
+{
+  title: "Teeth, Mouth & Oral Health",
+  qs: [
+    ["Q24. How would you describe your teeth strength and health?", ["Weak teeth, sensitive, cavities", "Moderate strength", "Strong, healthy teeth"]],
+    ["Q25. How often do you experience dryness in mouth or lips?", ["Very frequent dryness", "Occasional dryness", "Rare dryness"]]
+  ]
+},
+{
+  title: "Sweat & Body Odor",
+  qs: [
+    ["Q26. How much do you sweat during daily activities or mild exercise?", ["Very little sweating", "Moderate sweating", "Excessive sweating"]],
+    ["Q27. How strong is your body odor after sweating?", ["Mild or negligible", "Moderate", "Strong"]]
+  ]
+},
+{
+  title: "Hunger & Thirst Tolerance",
+  qs: [
+    ["Q28. How well can you tolerate skipping meals?", ["Poor tolerance, feel weak quickly", "Moderate tolerance", "Cannot tolerate skipping meals, become irritable"]],
+    ["Q29. How frequently do you feel thirsty?", ["Low thirst", "Moderate thirst", "High thirst"]]
+  ]
+},
+{
+  title: "Bone & Joint Characteristics",
+  qs: [
+    ["Q30. How would you describe your joints and flexibility?", ["Cracking joints, stiffness, dryness", "Moderate flexibility", "Heavy joints, stable, less flexible"]]
+  ]
+},
+{
+  title: "Temperature Sensitivity",
+  qs: [
+    ["Q31. How sensitive are you to cold temperatures?", ["Very sensitive to cold", "Moderate sensitivity", "Comfortable in cold"]]
+  ]
+},
+{
+  title: "Mental Stamina & Focus",
+  qs: [
+    ["Q32. How long can you maintain focus on a task?", ["Short attention span", "Moderate concentration", "Long sustained focus"]]
+  ]
+},
+{
+  title: "Recovery & Fatigue",
+  qs: [
+    ["Q33. How quickly do you recover from physical or mental fatigue?", ["Slow recovery", "Moderate recovery", "Fast recovery"]]
+  ]
+},
+{
+  title: "Advanced Traits",
+  qs: [
+    ["Q34. How is your voice quality?", ["Dry, rough, weak voice", "Sharp, clear voice", "Deep, heavy voice"]],
+    ["Q35. How fast do you speak or move?", ["Fast and restless", "Moderate", "Slow and steady"]],
+    ["Q36. How does your body usually feel in normal weather?", ["Often feels cold", "Feels normal", "Often feels warm or hot"]],
+    ["Q37. How does your skin react to sun exposure?", ["Skin becomes dry or rough", "Skin tolerates sun normally", "Skin becomes red, irritated, or burns easily"]],
+    ["Q38. Is your hunger timing regular every day?", ["Very irregular", "Mostly regular", "Very sharp and time-bound"]],
+    ["Q39. After emotional stress, how quickly do you return to normal?", ["Takes a long time", "Moderate time", "Very quickly"]],
+    ["Q40. How do you handle sudden changes in routine or environment?", ["Feel anxious or disturbed", "Adjust with some effort", "Adjust easily, prefer stability"]],
+    ["Q41. How is your speech volume?", ["Low and soft", "Medium", "Loud and forceful"]],
+    ["Q42. Do you notice body odor even without heavy sweating?", ["Rarely", "Sometimes", "Often"]]
+  ]
+}
+  
 ];
 
 let qid = 1;
